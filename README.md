@@ -4,7 +4,7 @@
 
 Text moderation bot for Discord.
 
-This bot is for learning purposes and does not currently implement any advanced methods to detect text that should be moderated.
+This bot was initially created for learning purposes and does not currently implement any advanced methods to detect text that should be moderated.
 
 However, with that said, it should still catch the most obvious.
 
