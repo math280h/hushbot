@@ -1,0 +1,8 @@
+hushbot:
+  general:
+    prefix: 'hush!'
+  channels:
+    log_channel: 000000000000000000
+    alert_channel: 000000000000000000
+  permissions:
+    staff_role: 000000000000000000

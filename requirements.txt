@@ -1,0 +1,4 @@
+redis~=3.5.3
+PyYAML~=5.4.1
+schema~=0.7.4
+discord.py~=1.7.3

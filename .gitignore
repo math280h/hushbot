@@ -1,0 +1,7 @@
+venv
+.idea
+
+*.log
+.env
+config.yaml
+__pycache__
