@@ -66,6 +66,9 @@ class Hush(discord.Client):
                     "Alert", message.author.id, word, message.content
                 )
             elif result == "ban":
+                await message.author.ban(
+                    reason=f"Banned by Hushbot for the following message: {message.content}"
+                )
                 await self.messenger.notify(  # type: ignore
                     "Log", message.author.id, word, message.content, "Banned user"
                 )
