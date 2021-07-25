@@ -1,18 +1,35 @@
 from typing import Any, List
 
+import discord
 from discord import Colour, Embed, Message
 from redis import Redis
 
 
-async def bl_add(r: Redis, word: str, action: str) -> bool:
+async def bl_add(r: Redis, word: str, action: str, message: discord.Message) -> bool:
     """Adds a word from the blacklist."""
-    r.set(word, action)
+    try:
+        r.set(word, action)
+    except Exception as e:
+        # TODO:: Add some kind of logging.
+        await message.channel.send("Something went wrong.")
+        return False
+
+    await message.channel.send(
+        f"**Added word to blacklist**\n\n*Word:* {word}\n*Action:* {action}"
+    )
     return True
 
 
-async def bl_remove(r: Redis, word: str) -> bool:
+async def bl_remove(r: Redis, word: str, message: discord.Message) -> bool:
     """Removes a word from the blacklist."""
-    r.delete(word)
+    try:
+        r.delete(word)
+    except Exception as e:
+        # TODO:: Add some kind of logging.
+        await message.channel.send("Something went wrong.")
+        return False
+
+    await message.channel.send(f"**Removed word from blacklist**:\n\n*Word:* {word}")
     return True
 
 
@@ -62,9 +79,9 @@ class Commands:
             if not await self.helpers.has_args(args, 3, message):
                 return False
 
-            return await bl_add(r, args[1], args[2])
+            return await bl_add(r, args[1], args[2], message)
         elif args[0] == "remove":
             if not await self.helpers.has_args(args, 2, message):
                 return True
 
-            return await bl_remove(r, args[1])
+            return await bl_remove(r, args[1], message)
