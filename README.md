@@ -20,6 +20,39 @@ Hushbot works with two types of configurations.
 
 To create a configuration simply make a copy of `config.example.yaml` called `config.yaml` in the root directory of the app.
 
+### Custom Rules
+
+Hushbot allows you to specify your own regex and corosponding action for that regex.
+
+To configure a custom rule simply edit your `config.yaml` to include a custom rule like shown below:
+
+```yaml
+  rules:
+    - block_b.t:
+        pattern: "b.t"
+        action: "alert"
+```
+
+or multiple rules:
+
+```yaml
+  rules:
+    - block_a.t:
+        pattern: "a.t"
+        action: "alert"
+    - block_b.t:
+        pattern: "b.t"
+        action: "ban"
+```
+
+*Accepted actions are "alert", "delete", "ban"*
+
+This example will detect any three-letter word that starts with b and ends with t. Once detected it will run the alert action.
+
+**Important functionality notice**
+
+Hushbot will ALWAYS run your custom rules before running any built-in checks.
+
 ## Running
 
 To run, simply create a `.env` using the `.env.example` file and run the following command.
