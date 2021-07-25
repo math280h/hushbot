@@ -26,8 +26,8 @@ class Hush(discord.Client):
             password=getenv("REDIS_PASS"),
         )
 
-        self.msg_filter = Filter(self.message_filter_storage)
         self.helpers = Helpers()
+        self.msg_filter = Filter(self.message_filter_storage, self.helpers)
         self.commands = Commands(self.helpers)
 
     async def on_ready(self) -> None:
@@ -69,7 +69,7 @@ class Hush(discord.Client):
                 await self.messenger.notify(  # type: ignore
                     "Log", message.author.id, word, message.content, "Banned user"
                 )
-            elif result == "del":
+            elif result == "delete":
                 await message.delete()
                 await self.messenger.notify(  # type: ignore
                     "Log", message.author.id, word, message.content, "Deleted message"

@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 import discord
-from schema import Schema, SchemaError
+from schema import Schema, SchemaError, Optional
 import yaml
 
 
@@ -13,6 +13,7 @@ def load_config() -> Dict:
                 "general": {"prefix": str},
                 "channels": {"log_channel": int, "alert_channel": int},
                 "permissions": {"staff_role": int},
+                Optional('rules'): [object]
             }
         }
     )
