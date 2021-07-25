@@ -2,11 +2,14 @@ from redis import Redis
 
 
 class Filter:
-    def __init__(self, r: Redis):
+    """Class for text filtering."""
+
+    def __init__(self, r: Redis) -> None:
         self.r = r
 
-    async def filter(self, text):
-        content = ''.join(e for e in text if e.isalnum())
+    async def filter(self, text: str) -> tuple:
+        """Filter message content."""
+        content = "".join(e for e in text if e.isalnum())
 
         words = self.r.keys()
 

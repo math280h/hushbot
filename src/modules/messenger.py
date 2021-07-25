@@ -1,43 +1,43 @@
-from discord import Embed, Colour
+from discord import Colour, Embed, TextChannel
 
 
 class Messenger:
-    def __init__(self, log_channel, alert_channel):
+    """Handles messages sent to discord."""
+
+    def __init__(self, log_channel: TextChannel, alert_channel: TextChannel) -> None:
         self.log_channel = log_channel
         self.alert_channel = alert_channel
 
-    async def notify(self, notify_type, user, word, original, action=None):
+    async def notify(
+        self,
+        notify_type: str,
+        user: int,
+        word: str,
+        original: str,
+        action: str = "",
+    ) -> None:
+        """Send message to discord."""
         channel = None
 
         if notify_type == "Log":
             channel = self.log_channel
             embed = Embed(title=f"Hush | {notify_type}", colour=Colour.orange())
 
-            embed.add_field(
-                name=f"Action",
-                value=f"```{action}```",
-                inline=False
-            )
+            embed.add_field(name="Action", value=f"```{action}```", inline=False)
         elif notify_type == "Alert":
             channel = self.alert_channel
             embed = Embed(title=f"Hush | {notify_type}", colour=Colour.red())
 
-        embed.add_field(
-            name=f"User",
-            value=f"<@{user}>",
-            inline=False
-        )
+        embed.add_field(name="User", value=f"<@{user}>", inline=False)
 
         embed.add_field(
-            name=f"Reason",
+            name="Reason",
             value=f"Use of blacklisted word:\n```{word}```",
-            inline=False
+            inline=False,
         )
 
         embed.add_field(
-            name=f"Original Message",
-            value=f"```{original}```",
-            inline=False
+            name="Original Message", value=f"```{original}```", inline=False
         )
 
-        await channel.send(embed=embed)
+        await channel.send(embed=embed)  # type: ignore
