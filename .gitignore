@@ -1,7 +1,13 @@
+# Editors
 venv
 .idea
 
+# Application
 *.log
 .env
 config.yaml
+
+# Others
 __pycache__
+.nox
+.mypy_cache

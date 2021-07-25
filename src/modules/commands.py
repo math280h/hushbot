@@ -1,46 +1,52 @@
-from discord import Embed, Colour
+from typing import Any, List
+
+from discord import Colour, Embed, Message
 from redis import Redis
 
 
-async def bl_add(r: Redis, word, action):
+async def bl_add(r: Redis, word: str, action: str) -> bool:
+    """Adds a word from the blacklist."""
     r.set(word, action)
     return True
 
 
-async def bl_remove(r: Redis, word):
+async def bl_remove(r: Redis, word: str) -> bool:
+    """Removes a word from the blacklist."""
     r.delete(word)
     return True
 
 
 class Commands:
-    def __init__(self, helpers):
+    """Contains all discord commands."""
+
+    def __init__(self, helpers: Any) -> None:
         self.helpers = helpers
 
-    async def man(self, message, args, r: Redis):
+    async def man(self, message: Message, args: List, r: Redis) -> None:
+        """Displays the help message."""
         embed = Embed(title="Hush | Help", colour=Colour.purple())
 
         prefix = self.helpers.config["general"]["prefix"]
 
         embed.add_field(
-            name=f"General Commands",
-            value=f"```{prefix}help```",
-            inline=False
+            name="General Commands", value=f"```{prefix}help```", inline=False
         )
         embed.add_field(
-            name=f"Blacklist Commands:",
+            name="Blacklist Commands:",
             value="**Prefix:** h!blacklist\n\n**Args**:\n*<word>*: The word to "
-                  "add or remove from the blacklist\n*<action>*: The type of "
-                  "action, accepted values are "
-                  "`alert`, `ban`, and `delete`\n\n```"
-                  f"add <word> <action> | Blacklists a word\n"
-                  f"remove <word> | Removes the word from the blacklist "
-                  "```",
-            inline=False
+            "add or remove from the blacklist\n*<action>*: The type of "
+            "action, accepted values are "
+            "`alert`, `ban`, and `delete`\n\n```"
+            "add <word> <action> | Blacklists a word\n"
+            "remove <word> | Removes the word from the blacklist "
+            "```",
+            inline=False,
         )
 
         await message.channel.send(embed=embed)
 
-    async def bl(self, message, args, r: Redis):
+    async def bl(self, message: Message, args: List, r: Redis) -> Any:
+        """Handles the blacklist commands."""
         if not await self.helpers.has_args(args, 1, message):
             return False
 
