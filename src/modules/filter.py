@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import re
 from typing import Any, List, Pattern
 
-from redis import Redis
+from src.modules.store import Store
 
 
 @dataclass
@@ -17,8 +17,8 @@ class CustomRule:
 class Filter:
     """Class for text filtering."""
 
-    def __init__(self, r: Redis, helper: Any) -> None:
-        self.r = r
+    def __init__(self, store: Store, helper: Any) -> None:
+        self.store = store
         self.helper = helper
 
         self.link_pattern = re.compile(
@@ -59,11 +59,9 @@ class Filter:
         else:
             content = "".join(e for e in text if e.isalnum()).lower()
 
-        words = self.r.keys()
-
-        for word in words:
-            if word.decode().lower() in content:
-                action = self.r.get(word.decode()).decode()
-                return action, word.decode()
+        for item in self.store.blacklist:
+            if item.key in content:
+                action = item.action
+                return action, item.key
 
         return None, None
