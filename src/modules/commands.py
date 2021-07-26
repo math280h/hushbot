@@ -9,7 +9,7 @@ async def bl_add(r: Redis, word: str, action: str, message: discord.Message) -> 
     """Adds a word from the blacklist."""
     try:
         r.set(word, action)
-    except Exception as e:
+    except Exception as e:  # type: ignore
         # TODO:: Add some kind of logging.
         await message.channel.send("Something went wrong.")
         return False
@@ -24,7 +24,7 @@ async def bl_remove(r: Redis, word: str, message: discord.Message) -> bool:
     """Removes a word from the blacklist."""
     try:
         r.delete(word)
-    except Exception as e:
+    except Exception as e:  # type: ignore
         # TODO:: Add some kind of logging.
         await message.channel.send("Something went wrong.")
         return False
