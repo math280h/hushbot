@@ -50,7 +50,7 @@ class Helpers:
             and await is_staff(message.author, required_role)
         )
 
-    async def get_command(self, message: discord.Message) -> tuple[str, str]:
+    async def get_command(self, message: discord.Message) -> tuple[str, List[str]]:
         """Get's the specified command from message."""
         ctx = message.content[len(self.config["general"]["prefix"]) :].split(" ")
         return ctx[0], ctx[1:]

@@ -8,6 +8,7 @@ from src.helpers import Helpers
 from src.modules.commands import Commands
 from src.modules.filter import Filter
 from src.modules.messenger import Messenger
+from src.modules.store import Store
 
 
 class Hush(discord.Client):
@@ -27,8 +28,9 @@ class Hush(discord.Client):
         )
 
         self.helpers = Helpers()
-        self.msg_filter = Filter(self.message_filter_storage, self.helpers)
-        self.commands = Commands(self.helpers)
+        self.store = Store(self.message_filter_storage)
+        self.msg_filter = Filter(self.store, self.helpers)
+        self.commands = Commands(self.helpers, self.store)
 
     async def on_ready(self) -> None:
         """Handles messenger when connected to discord."""
@@ -52,7 +54,7 @@ class Hush(discord.Client):
             cmd_list = {"help": self.commands.man, "blacklist": self.commands.bl}
 
             cmd = cmd_list.get(command, self.commands.man)
-            await cmd(message, args, self.message_filter_storage)
+            await cmd(message, args)
 
         elif not message.author.bot:
             # Filter messages
