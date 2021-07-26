@@ -1,7 +1,17 @@
+from dataclasses import dataclass
 import re
-from typing import Any
+from typing import Any, List, Pattern
 
 from redis import Redis
+
+
+@dataclass
+class CustomRule:
+    """Dataclass for custom rules."""
+
+    name: str
+    action: str
+    pattern: Pattern
 
 
 class Filter:
@@ -11,22 +21,38 @@ class Filter:
         self.r = r
         self.helper = helper
 
-    async def filter(self, text: str) -> tuple:
-        """Filter message content."""
-        if "rules" in self.helper.config:
-            for rule in self.helper.config["rules"]:
-                rule_name = list(rule.keys())[0]
-                if re.match(rule[rule_name]["pattern"], text) is not None:
-                    return (
-                        rule[rule_name]["action"],
-                        f"Matched custom rule: {rule_name}",
-                    )
-
-        regex = (
+        self.link_pattern = re.compile(
             r"(?:(?:https?|ftp):\/\/|\b(?:[a-z\d]+\.))(?:(?:[^\s()<>]+|\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))?\))+("
             r"?:\((?:[^\s()<>]+|(?:\(?:[^\s()<>]+\)))?\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))?/im"
         )
-        result = re.match(regex, text)
+
+        self.custom_rules: List[CustomRule] = []
+        self.compile_custom_rules()
+
+    def compile_custom_rules(self) -> None:
+        """Compile regex for all custom rules."""
+        if "rules" in self.helper.config:
+            for rule in self.helper.config["rules"]:
+                rule_name = list(rule.keys())[0]
+                self.custom_rules.append(
+                    CustomRule(
+                        rule_name,
+                        rule[rule_name]["action"],
+                        re.compile(rule[rule_name]["pattern"]),
+                    )
+                )
+
+    async def filter(self, text: str) -> tuple:
+        """Filter message content."""
+        if self.custom_rules:
+            for rule in self.custom_rules:
+                if rule.pattern.match(text) is not None:
+                    return (
+                        rule.action,
+                        f"Matched custom rule: {rule.name}",
+                    )
+
+        result = self.link_pattern.match(text)
 
         if result is not None:
             content = result[0]
