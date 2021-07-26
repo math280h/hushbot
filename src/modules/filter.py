@@ -1,15 +1,17 @@
 from dataclasses import dataclass
 import re
-from typing import Any, List
+from typing import Any, List, Pattern
 
 from redis import Redis
 
 
 @dataclass
 class CustomRule:
+    """Dataclass for custom rules."""
+
     name: str
     action: str
-    pattern: re.compile
+    pattern: Pattern
 
 
 class Filter:
@@ -36,7 +38,7 @@ class Filter:
                     CustomRule(
                         rule_name,
                         rule[rule_name]["action"],
-                        re.compile(rule[rule_name]["pattern"])
+                        re.compile(rule[rule_name]["pattern"]),
                     )
                 )
 
