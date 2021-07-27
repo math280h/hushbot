@@ -2,13 +2,14 @@ from typing import Any, List
 
 from discord import Colour, Embed, Message
 
+from src.helpers import Helpers
 from src.modules.store import Store
 
 
 class Commands:
     """Contains all discord commands."""
 
-    def __init__(self, helpers: Any, store: Store) -> None:
+    def __init__(self, helpers: Helpers, store: Store) -> None:
         self.helpers = helpers
         self.store = store
 

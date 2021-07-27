@@ -26,6 +26,8 @@ services:
       - REDIS_PASS=${REDIS_PASS:-password123}
     depends_on:
       - redis
+    volumes:
+      - ./bot.log:/bot/bot.log
     networks:
       hushbot:
 

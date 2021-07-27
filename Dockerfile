@@ -5,6 +5,7 @@ WORKDIR /bot
 # Copy Code
 COPY src src
 COPY run.py run.py
+COPY bot.log bot.log
 
 # Copy Configuration
 COPY config.yaml config.yaml

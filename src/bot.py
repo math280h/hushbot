@@ -1,3 +1,4 @@
+import logging
 from os import getenv
 from typing import Any
 
@@ -19,17 +20,29 @@ class Hush(discord.Client):
         super().__init__(**options)
         self.messenger = None
 
-        # Storage
-        self.message_filter_storage = redis.Redis(
-            host=getenv("REDIS_HOST"),
-            port=getenv("REDIS_PORT"),
-            username=getenv("REDIS_USER"),
-            password=getenv("REDIS_PASS"),
+        # Initialize Logging
+        self.logger = logging.getLogger("Hushbot")
+        handler = logging.FileHandler("bot.log")
+        log_format = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         )
+        handler.setFormatter(log_format)
+        self.logger.addHandler(handler)
+
+        # Storage
+        try:
+            self.message_filter_storage = redis.Redis(
+                host=getenv("REDIS_HOST"),
+                port=getenv("REDIS_PORT"),
+                username=getenv("REDIS_USER"),
+                password=getenv("REDIS_PASS"),
+            )
+        except Exception:
+            self.logger.exception("Exception occurred while initializing Redis")
 
         self.helpers = Helpers()
-        self.store = Store(self.message_filter_storage)
-        self.msg_filter = Filter(self.store, self.helpers)
+        self.store = Store(self.message_filter_storage, self.logger)
+        self.msg_filter = Filter(self.store, self.helpers, self.logger)
         self.commands = Commands(self.helpers, self.store)
 
     async def on_ready(self) -> None:
