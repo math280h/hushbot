@@ -1,0 +1,29 @@
+name: "Typing and Linting"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ main ]
+  schedule:
+    - cron: '24 14 * * 5'
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    # Initializes nox
+    - name: Initialize Nox
+      uses: excitedleigh/setup-nox@v2.0.0
+
+    - name: Runs nox
+      run: nox
