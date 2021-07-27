@@ -22,7 +22,7 @@ jobs:
       uses: actions/checkout@v2
 
     # Initializes nox
-    - name: Initialize CodeQL
+    - name: Initialize Nox
       uses: excitedleigh/setup-nox@v2.0.0
 
     - name: Runs nox
