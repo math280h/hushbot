@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from logging import Logger
 from typing import List
 
 from redis import Redis
@@ -15,8 +16,9 @@ class BlacklistedWord:
 class Store:
     """Handles data to/from redis."""
 
-    def __init__(self, r: Redis) -> None:
+    def __init__(self, r: Redis, logger: Logger) -> None:
         self.r = r
+        self.logger = logger
 
         self.blacklist: List[BlacklistedWord] = []
         self.load_from_redis()
@@ -25,10 +27,14 @@ class Store:
         """Load blacklist from redis and store it in memory."""
         blacklist: List[BlacklistedWord] = []
 
-        for item in self.r.keys():
-            key: str = item.decode()
+        try:
+            for item in self.r.keys():
+                key: str = item.decode()
 
-            blacklist.append(BlacklistedWord(key.lower(), self.r.get(key).decode()))
+                blacklist.append(BlacklistedWord(key.lower(), self.r.get(key).decode()))
+        except Exception:
+            self.logger.exception("Exception occurred while connecting to Redis")
+            return
 
         # Overwrite current blacklist
         self.blacklist = blacklist
@@ -39,8 +45,8 @@ class Store:
             self.r.set(word, action)
             self.load_from_redis()
             return True
-        except Exception as e:
-            # TODO:: Add some kind of logging.
+        except Exception:
+            self.logger.exception("Exception occurred while adding word to Redis")
             return False
 
     def remove(self, word: str) -> bool:
@@ -49,6 +55,6 @@ class Store:
             self.r.delete(word)
             self.load_from_redis()
             return True
-        except Exception as e:
-            # TODO:: Add some kind of logging.
+        except Exception:
+            self.logger.exception("Exception occurred while removing word from Redis")
             return False

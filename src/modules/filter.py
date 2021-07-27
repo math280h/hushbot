@@ -1,7 +1,9 @@
 from dataclasses import dataclass
+from logging import Logger
 import re
-from typing import Any, List, Pattern
+from typing import List, Pattern
 
+from src.helpers import Helpers
 from src.modules.store import Store
 
 
@@ -17,9 +19,10 @@ class CustomRule:
 class Filter:
     """Class for text filtering."""
 
-    def __init__(self, store: Store, helper: Any) -> None:
+    def __init__(self, store: Store, helper: Helpers, logger: Logger) -> None:
         self.store = store
         self.helper = helper
+        self.logger = logger
 
         self.link_pattern = re.compile(
             r"(?:(?:https?|ftp):\/\/|\b(?:[a-z\d]+\.))(?:(?:[^\s()<>]+|\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))?\))+("
@@ -31,16 +34,20 @@ class Filter:
 
     def compile_custom_rules(self) -> None:
         """Compile regex for all custom rules."""
-        if "rules" in self.helper.config:
-            for rule in self.helper.config["rules"]:
-                rule_name = list(rule.keys())[0]
-                self.custom_rules.append(
-                    CustomRule(
-                        rule_name,
-                        rule[rule_name]["action"],
-                        re.compile(rule[rule_name]["pattern"]),
+        try:
+            if "rules" in self.helper.config:
+                for rule in self.helper.config["rules"]:
+                    rule_name = list(rule.keys())[0]
+                    self.custom_rules.append(
+                        CustomRule(
+                            rule_name,
+                            rule[rule_name]["action"],
+                            re.compile(rule[rule_name]["pattern"]),
+                        )
                     )
-                )
+        except Exception:
+            self.logger.exception("Exception occurred while loading custom rules.")
+            self.custom_rules = []
 
     async def filter(self, text: str) -> tuple:
         """Filter message content."""
