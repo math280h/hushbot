@@ -66,6 +66,9 @@ class Filter:
         else:
             content = "".join(e for e in text if e.isalnum()).lower()
 
+        if self.helper.config["filters"]["profanity"]["enable"]:
+            return self.helper.config["filters"]["profanity"]["action"], "Profanity detected"
+
         for item in self.store.blacklist:
             if item.key in content:
                 action = item.action

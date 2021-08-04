@@ -13,6 +13,7 @@ def load_config() -> Dict:
                 "general": {"prefix": str},
                 "channels": {"log_channel": int, "alert_channel": int},
                 "permissions": {"staff_role": int},
+                "filters": {"profanity": {"enable": bool, "action": str}},
                 Optional("rules"): [object],
             }
         }

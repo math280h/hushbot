@@ -6,3 +6,7 @@ hushbot:
     alert_channel: 000000000000000000
   permissions:
     staff_role: 000000000000000000
+  filters:
+    profanity:
+      enable: true
+      action: "alert"
