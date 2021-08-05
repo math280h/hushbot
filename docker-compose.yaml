@@ -18,6 +18,7 @@ services:
   bot:
     build:
       context: ./
+      dockerfile: docker/Dockerfile
     environment:
       - BOT_TOKEN=${BOT_TOKEN}
       - REDIS_HOST=redis

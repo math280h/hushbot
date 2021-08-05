@@ -1,4 +1,4 @@
-![Logo](logo.png)
+![Logo](assets/logo.png)
 
 # About
 
