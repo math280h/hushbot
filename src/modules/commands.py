@@ -29,7 +29,8 @@ class Commands:
             "action, accepted values are "
             "`alert`, `ban`, and `delete`\n\n```"
             "add <word> <action> | Blacklists a word\n"
-            "remove <word> | Removes the word from the blacklist "
+            "remove <word> | Removes the word from the blacklist\n"
+            "show | Shows the current blacklist"
             "```",
             inline=False,
         )
@@ -41,7 +42,7 @@ class Commands:
         if not await self.helpers.has_args(args, 1, message):
             return False
 
-        accepted_actions = ["add", "remove"]
+        accepted_actions = ["add", "remove", "show"]
 
         if args[0] not in accepted_actions:
             await message.channel.send(
@@ -70,3 +71,21 @@ class Commands:
                 )
             else:
                 await message.channel.send("Something went wrong while removing word.")
+
+        elif args[0] == "show":
+            try:
+                embed = Embed(title="Hush | Blacklist", colour=Colour.purple())
+                output = ""
+                for word in self.store.blacklist:
+                    output += f"**{word.key}** - {word.action}\n"
+
+                embed.add_field(
+                    name="Currently Blacklisted",
+                    value=f"Shown as `Word - Action`\n\n{output}",
+                    inline=False,
+                )
+
+                await message.channel.send(embed=embed)
+
+            except Exception:
+                await message.channel.send("Something went wrong while showing list.")
