@@ -19,6 +19,9 @@ class Hush(discord.Client):
 
         super().__init__(**options)
         self.messenger = None
+        self.commands = None
+
+        self.ready = False
 
         # Initialize Logging
         self.logger = logging.getLogger("Hushbot")
@@ -43,19 +46,25 @@ class Hush(discord.Client):
         self.helpers = Helpers()
         self.store = Store(self.message_filter_storage, self.logger)
         self.msg_filter = Filter(self.store, self.helpers, self.logger)
-        self.commands = Commands(self.helpers, self.store)
 
     async def on_ready(self) -> None:
         """Handles messenger when connected to discord."""
         print("Connected!")
-        print("Username: {0.name}\nID: {0.id}".format(self.user))
+        print("Username: {0.name}\nID: {0.id}".format(self.user), flush=True)
         self.messenger = Messenger(
             self.get_channel(self.helpers.config["channels"]["log_channel"]),
             self.get_channel(self.helpers.config["channels"]["alert_channel"]),
         )
 
+        self.commands = Commands(self.helpers, self.store, self.messenger, self.get_channel)
+
+        self.ready = True
+
     async def on_message(self, message: discord.Message) -> None:
         """Handles messages."""
+        if not self.ready:
+            return
+
         if await self.helpers.is_command(
             message,
             discord.utils.get(
@@ -64,7 +73,11 @@ class Hush(discord.Client):
         ):
             command, args = await self.helpers.get_command(message)
 
-            cmd_list = {"help": self.commands.man, "blacklist": self.commands.bl}
+            cmd_list = {
+                "help": self.commands.man,
+                "blacklist": self.commands.bl,
+                "config": self.commands.config
+            }
 
             cmd = cmd_list.get(command, self.commands.man)
             await cmd(message, args)
