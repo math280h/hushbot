@@ -2,7 +2,7 @@
   <img src="/assets/logo.png" width="240px" height="240px" />
 </p>
 
-# About
+# hushbot
 
 Text moderation bot for Discord.
 
