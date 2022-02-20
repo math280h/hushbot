@@ -21,7 +21,7 @@ services:
       dockerfile: docker/Dockerfile
     environment:
       - BOT_TOKEN=${BOT_TOKEN}
-      - REDIS_HOST=redis
+      - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
       - REDIS_USER=${REDIS_USER:-default}
       - REDIS_PASS=${REDIS_PASS:-password123}
